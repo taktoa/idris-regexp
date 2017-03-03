@@ -1,0 +1,5 @@
+package regexp
+
+opts = "-p contrib -p pruviloj"
+
+modules = Main
