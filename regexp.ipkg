@@ -2,4 +2,4 @@ package regexp
 
 opts = "-p contrib -p pruviloj"
 
-modules = Main
+modules = Main, Regex.Type
