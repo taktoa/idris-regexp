@@ -63,10 +63,25 @@ nullable = \x => if go x then Ɛ else Ø
 Nullable : (DecEq tok) => Regex tok -> Type
 Nullable r = Matches [] r
 
+absurdIso : {ty : Type}
+            -> (DecEq ty)
+            => (a : ty) -> (b : ty)
+            -> (dec : Dec (a = b))
+            -> (decAsBool dec = False)
+            -> Iso Void (a = b)
+absurdIso a b (Yes _)     Refl impossible
+absurdIso a b (No contra) Refl = MkIso absurd contra
+                                 (\x => absurd (contra x))
+                                 (\x => absurd x)
+
 ||| FIXME: doc
-nullableWorks : (DecEq tok) => (r : Regex tok)
+nullableWorks : (DecEq tok, DecEq (Regex tok)) => (r : Regex tok)
                 -> Iso (Nullable r) (nullable r = Ɛ)
-nullableWorks Ø = ?fixme
+nullableWorks Ø = absurdIso Ø Ɛ (decEq Ø Ɛ) ?fixme
+--   where
+--     fixme : (DecEq t) => (a : t) -> (b : t) -> {prf : (decEq a b = No contra)}
+--             -> (a = b) -> Void
+--     fixme = ?help
 nullableWorks owise = ?fixme_nullableWorks_owise
 -- nullableWorks Ø         = ?fixme71_1
 -- nullableWorks Ɛ         = ?fixme71_2
@@ -110,4 +125,4 @@ derivativeWorks = ?fixme_derivativeWorks
 -- derivativeWorks str (x :.: y) = ?fixme72_8
 
 main : IO ()
-main = pure ()
+main = print (decAsBool (regexDecEq Bool (Ø {tok=Bool}) (Ɛ {tok=Bool})))
